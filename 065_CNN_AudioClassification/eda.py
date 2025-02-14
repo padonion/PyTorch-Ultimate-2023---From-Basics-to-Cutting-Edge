@@ -3,12 +3,19 @@ import torchaudio
 from plot_audio import plot_specgram, plot_waveform
 import seaborn as sns   
 import matplotlib.pyplot as plt
+
+# %%
+import kagglehub
+# Download latest version
+path = kagglehub.dataset_download("kinguistics/heartbeat-sounds")
+print(path)
+
 # %% check if audio backend is installed
 # before: pip install soundfile
 torchaudio.info
 
 # %% data import
-wav_file = 'data/set_a/extrahls__201101070953.wav'
+wav_file = path + '/set_a/extrahls__201101070953.wav'
 data_waveform, sr = torchaudio.load(wav_file)
 # %%
 data_waveform.size()

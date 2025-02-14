@@ -57,16 +57,26 @@ class ImageMulticlassClassificationNet(nn.Module):
 model = ImageMulticlassClassificationNet()      
 # model(input).shape
 
+# %%
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f'device: {device}')
+
 # %% 
-loss_fn = nn.CrossEntropyLoss()
+loss_fn = nn.CrossEntropyLoss().to(device)
 optimizer = torch.optim.Adam(model.parameters())
+model = model.to(device)
+
 # %% TRAINING
 losses_epoch_mean = []
 NUM_EPOCHS = 100
+model = model.to(device)
 for epoch in range(NUM_EPOCHS):
     losses_epoch = []
     for i, data in enumerate(trainloader, 0):
+        
         inputs, labels = data
+        inputs, labels = inputs.to(device), labels.to(device)
+        
         optimizer.zero_grad()
         outputs = model(inputs)
 
@@ -86,18 +96,19 @@ y_test = []
 y_test_hat = []
 for i, data in enumerate(testloader, 0):
     inputs, y_test_temp = data
+    inputs, y_test_temp =  inputs.to(device), y_test_temp.to(device)
     with torch.no_grad():
         y_test_hat_temp = model(inputs).round()
     
-    y_test.extend(y_test_temp.numpy())
-    y_test_hat.extend(y_test_hat_temp.numpy())
+    y_test.extend(y_test_temp.cpu().numpy())
+    y_test_hat.extend(y_test_hat_temp.cpu().numpy())
 
 # %% Baseline Classifier
 Counter(y_test)
 # most dominant class: 12 obs
 # length y_test = 24
 # 12 / 24 = 50 %
-
+print(f'naive classifier accuracy: {Counter(y_test).most_common()[0][1]/ len(y_test) * 100}%')
 
 #%% Accuracy
 acc = accuracy_score(y_test, np.argmax(y_test_hat, axis=1))

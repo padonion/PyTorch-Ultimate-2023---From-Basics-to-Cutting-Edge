@@ -3,10 +3,18 @@ import torchaudio
 from plot_audio  import plot_specgram
 import os
 import random
+
 # %%
-wav_path = 'data/set_a'
+import kagglehub
+# Download latest version
+path = kagglehub.dataset_download("kinguistics/heartbeat-sounds")
+print("Path to dataset files:", path)
+
+# %%
+wav_path = path + "/set_a"
 wav_filenames = os.listdir(wav_path)
 random.shuffle(wav_filenames)
+print(f'Nb waves: {len(wav_filenames)}')
 
 # %%
 ALLOWED_CLASSES = ['normal', 'murmur', 'extrahls', 'artifact']
@@ -27,7 +35,6 @@ for f in wav_filenames:
         # extract class type from file, e.g. 
         data_waveform, sr = torchaudio.load(file_path)
         # create spectrogram and save it
-        
-        plot_specgram(waveform=data_waveform, sample_rate=sr, file_path=target_file_path)
+        # plot_specgram(waveform=data_waveform, sample_rate=sr, file_path=target_file_path)
         
 #%%
