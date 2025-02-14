@@ -33,7 +33,7 @@ def imshow(img):
 
 # get some random training images
 dataiter = iter(trainloader)
-images, labels = dataiter.next()
+images, labels = next(dataiter)
 imshow(torchvision.utils.make_grid(images, nrow=2))
 # %% Neural Network setup
 class ImageClassificationNet(nn.Module):
@@ -67,6 +67,11 @@ class ImageClassificationNet(nn.Module):
 model = ImageClassificationNet()      
 loss_fn = nn.BCELoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.8)
+
+# %% device
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f'device: {device}')
+
 # %% training
 NUM_EPOCHS = 10
 for epoch in range(NUM_EPOCHS):

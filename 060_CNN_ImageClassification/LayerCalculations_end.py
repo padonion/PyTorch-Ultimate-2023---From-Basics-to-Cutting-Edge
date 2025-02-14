@@ -14,7 +14,7 @@ model = nn.Sequential(OrderedDict([
     ('relu2', nn.ReLU()),
     ('pool2', nn.MaxPool2d(2, 2)), # out: (BS, 16, 6, 6)
     ('flatten', nn.Flatten()),  # shape: (3, 16*6*6)
-    ('fc1', nn.Linear(16 * 6 * 6, 127)),
+    ('fc1', nn.Linear(16 * 6 * 6, 128)),
     ('relu3', nn.ReLU()),
     ('fc2', nn.Linear(128, 64)),
     ('relu4', nn.ReLU()),
