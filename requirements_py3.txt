@@ -1,5 +1,5 @@
 # python -m pip install --upgrade pip
-# pip install torch torchvision torchmetrics --index-url https://download.pytorch.org/whl/cu126
+# pip install torch torchvision torchaudio torchmetrics --index-url https://download.pytorch.org/whl/cu126
 
 ipykernel
 ipython
@@ -10,3 +10,4 @@ requests
 scikit-learn
 scipy
 seaborn
+kagglehub
