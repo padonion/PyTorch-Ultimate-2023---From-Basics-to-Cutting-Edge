@@ -3,6 +3,7 @@
 
 ipykernel
 ipython
+ipywidgets
 matplotlib
 pandas
 pillow
@@ -11,3 +12,4 @@ scikit-learn
 scipy
 seaborn
 kagglehub
+soundfile
