@@ -13,3 +13,5 @@ scipy
 seaborn
 kagglehub
 soundfile
+detecto
+ultralytics

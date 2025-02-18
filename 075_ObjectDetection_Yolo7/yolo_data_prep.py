@@ -30,8 +30,17 @@ create_folder('yolov7\\val\\labels')
 create_folder('yolov7\\test\\images')
 create_folder('yolov7\\test\\labels')
 
+# %%
+import kagglehub
+
+# Download latest version
+path = kagglehub.dataset_download("andrewmvd/face-mask-detection")
+
+print("Path to dataset files:", path)
+
 #%% get all image files
-img_folder = 'images'
+#img_folder = 
+img_folder = path + '/images'
 _, _, files = next(os.walk(img_folder))
 pos = 0
 for f in files:
@@ -50,11 +59,11 @@ for f in files:
         label_source_file = f"{label_file_basename}.xml"
         label_dest_file = f"{label_file_basename}.txt"
         
-        label_source_path = os.path.join('annotations', label_source_file)
+        label_source_path = os.path.join(img_folder,'..','annotations', label_source_file)
         label_dest_path = os.path.join(dest_folder, 'labels', label_dest_file)
         # if file exists, copy it to target folder
         if os.path.exists(label_source_path):
-             # parse the content of the xml file
+            # parse the content of the xml file
             tree = ET.parse(label_source_path)
             root = tree.getroot()
             width = int(root.find("size").find("width").text)
