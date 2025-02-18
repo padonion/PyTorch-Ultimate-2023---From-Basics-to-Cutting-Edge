@@ -7,6 +7,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 from random import uniform
+from os import makedirs
 
 import seaborn as sns
 sns.set(rc={'figure.figsize':(12,12)})
@@ -31,6 +32,12 @@ BATCH_SIZE = 64
 train_loader = DataLoader(
     train_set, batch_size=BATCH_SIZE, shuffle=True
 )
+
+# %% device
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f'Device: {device}')
+
+
 #%% initialize discriminator and generator
 discriminator = nn.Sequential(
             nn.Linear(2, 256),
@@ -44,7 +51,7 @@ discriminator = nn.Sequential(
             nn.Dropout(0.3),
             nn.Linear(64, 1),
             nn.Sigmoid(),
-        )
+        ).to(device)
 
 generator = nn.Sequential(
             nn.Linear(2, 16),
@@ -52,22 +59,23 @@ generator = nn.Sequential(
             nn.Linear(16, 32),
             nn.ReLU(),
             nn.Linear(32, 2),
-        )
+        ).to(device)
 
 # %% training
 LR = 0.001
-NUM_EPOCHS = 2
-loss_function = nn.BCELoss()
+NUM_EPOCHS = 1000
+loss_function = nn.BCELoss().to(device)
 optimizer_discriminator = torch.optim.Adam(discriminator.parameters())
 optimizer_generator = torch.optim.Adam(generator.parameters())
 
 for epoch in range(NUM_EPOCHS):
     for n, (real_samples, _) in enumerate(train_loader):
         # Data for training the discriminator
-        real_samples_labels = torch.ones((BATCH_SIZE, 1))
-        latent_space_samples = torch.randn((BATCH_SIZE, 2))
+        real_samples = real_samples.to(device)
+        real_samples_labels = torch.ones((BATCH_SIZE, 1)).to(device)
+        latent_space_samples = torch.randn((BATCH_SIZE, 2)).to(device)
         generated_samples = generator(latent_space_samples)
-        generated_samples_labels = torch.zeros((BATCH_SIZE, 1))
+        generated_samples_labels = torch.zeros((BATCH_SIZE, 1)).to(device)
         all_samples = torch.cat((real_samples, generated_samples))
         all_samples_labels = torch.cat(
             (real_samples_labels, generated_samples_labels)
@@ -84,7 +92,7 @@ for epoch in range(NUM_EPOCHS):
 
         if epoch % 2 == 1:
             # Data for training the generator
-            latent_space_samples = torch.randn((BATCH_SIZE, 2))
+            latent_space_samples = torch.randn((BATCH_SIZE, 2)).to(device)
 
             # Training the generator
             generator.zero_grad()
@@ -96,28 +104,26 @@ for epoch in range(NUM_EPOCHS):
             loss_generator.backward()
             optimizer_generator.step()
     
-            # Show progress
-            if epoch % 10 == 0:
-                print(epoch)
-                print(f"Epoch {epoch}, Discriminator Loss {loss_discriminator}")
-                print(f"Epoch {epoch}, Generator Loss {loss_generator}")
-                with torch.no_grad():
-                    latent_space_samples = torch.randn(1000, 2)
-                    generated_samples = generator(latent_space_samples).detach()
-                plt.figure()
-                plt.plot(generated_samples[:, 0], generated_samples[:, 1], ".")
-                plt.xlim((-20, 20))
-                plt.ylim((-20, 15))
-                plt.text(10, 15, f"Epoch {epoch}")
-                plt.savefig(f"train_progress/image{str(epoch).zfill(3)}.jpg")
-
-
-    
+        # Show progress
+        if epoch % 10 == 0:
+            print(epoch)
+            print(f"Epoch {epoch}, Discriminator Loss {loss_discriminator}")
+            print(f"Epoch {epoch}, Generator Loss {loss_generator}")
+            # with torch.no_grad():
+            #     latent_space_samples = torch.randn(1000, 2).to(device)
+            #     generated_samples = generator(latent_space_samples).cpu().detach()
+            # plt.figure()
+            # plt.plot(generated_samples[:, 0], generated_samples[:, 1], ".")
+            # plt.xlim((-20, 20))
+            # plt.ylim((-20, 15))
+            # plt.text(10, 15, f"Epoch {epoch}")
+            # makedirs("train_progress", exist_ok=True)
+            # plt.savefig(f"train_progress/image{str(epoch).zfill(3)}.jpg")
 
 # %% check the result
-latent_space_samples = torch.randn(10000, 2)
+latent_space_samples = torch.randn(10000, 2).to(device)
 generated_samples = generator(latent_space_samples)
-generated_samples = generated_samples.detach()
+generated_samples = generated_samples.cpu().detach()
 plt.plot(generated_samples[:, 0], generated_samples[:, 1], ".")
 plt.text(10, 15, f"Epoch {epoch}")
 
