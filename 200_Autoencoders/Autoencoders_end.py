@@ -75,9 +75,13 @@ input = torch.rand((1, 1, 64, 64))
 model = Autoencoder()
 model(input).shape
 
+# %% device detection
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f'Device: {device}')
 
 #%% init model, loss function, optimizer
-model = Autoencoder()
+model = Autoencoder().to(device)
+loss_fn = nn.MSELoss().to(device)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
@@ -86,6 +90,8 @@ NUM_EPOCHS = 30
 for epoch in range(NUM_EPOCHS):
     losses_epoch = []
     for batch_idx, (data, target) in enumerate(dataloader):
+        data, target = data.to(device), target.to(device)
+        
         data = data.view(-1, 1, 64, 64)
         output = model(data)
 
@@ -104,22 +110,23 @@ def show_image(img):
     npimg = img.numpy()
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
 
-images, labels = iter(dataloader).next()
+images, labels = next(iter(dataloader))
 print('original')
 plt.rcParams["figure.figsize"] = (20,3)
 show_image(torchvision.utils.make_grid(images))
 
 # %% latent space
 print('latent space')
-latent_img = model.encoder(images)
+latent_img = model.encoder(images.to(device)).cpu()
 latent_img = latent_img.view(-1, 1, 8, 16)
 show_image(torchvision.utils.make_grid(latent_img))
 #%%
 print('reconstructed')
-show_image(torchvision.utils.make_grid(model(images)))
-
+show_image(torchvision.utils.make_grid(model(images.to(device)).cpu()))
 
 # %% Compression rate
 image_size = images.shape[2] * images.shape[3] * 1
 compression_rate = (1 - LATENT_DIMS / image_size) * 100
 compression_rate
+
+# %%
