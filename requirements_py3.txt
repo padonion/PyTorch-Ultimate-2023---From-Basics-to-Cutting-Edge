@@ -15,3 +15,4 @@ kagglehub
 soundfile
 detecto
 ultralytics
+torch_geometric
