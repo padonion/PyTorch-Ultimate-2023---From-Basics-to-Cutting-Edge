@@ -1,8 +1,6 @@
 #%%
 # source: https://medium.com/@yanis.labrak/how-to-train-a-custom-vision-transformer-vit-image-classifier-to-help-endoscopists-in-under-5-min-2e7e4110a353
 import pandas
-#%%
-#%% Packages
 from hugsvision.dataio.VisionDataset import VisionDataset
 from hugsvision.nnet.VisionClassifierTrainer import VisionClassifierTrainer
 from transformers import ViTFeatureExtractor, ViTForImageClassification
@@ -14,6 +12,9 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 
 #%% data prep
+
+# copy the train and test folders from 060_CNN_ImageClassification/MulticlassClassification
+
 train, val, id2label, label2id = VisionDataset.fromImageFolder(
     "./train/",
     test_ratio   = 0.1,
@@ -32,7 +33,7 @@ trainer = VisionClassifierTrainer(
 	output_dir   = "./out/",
 	max_epochs   = 20,
 	batch_size   = 4, 
-	lr	     = 2e-5,
+	lr	         = 2e-5,
 	fp16	     = True,
 	model = ViTForImageClassification.from_pretrained(
 	    huggingface_model,
@@ -43,6 +44,7 @@ trainer = VisionClassifierTrainer(
 	feature_extractor = ViTFeatureExtractor.from_pretrained(
 		huggingface_model,
 	),
+	eval_metric= "eval_loss"
 )
 
 #%% Model Evaluation
@@ -59,7 +61,8 @@ plt.savefig("./conf_matrix_1.jpg")
 
 # %% Inference
 import os.path
-path = "./out/MYDOGCLASSIFIER/20_2022-09-09-22-30-04/model/"
+# need to copy config.json and name it preprocessor_config.json :)
+path = "./out/MYDOGCLASSIFIER/20_2025-02-19-13-46-00/model"
 img  = "./test/affenpinscher/affenpinscher_0.jpg"
 
 classifier = VisionClassifierInference(
