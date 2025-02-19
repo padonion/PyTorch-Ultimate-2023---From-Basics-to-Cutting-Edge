@@ -16,3 +16,4 @@ soundfile
 detecto
 ultralytics
 torch_geometric
+hugsvision
