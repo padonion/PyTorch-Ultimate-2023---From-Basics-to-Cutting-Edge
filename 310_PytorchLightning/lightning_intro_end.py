@@ -84,7 +84,7 @@ class LitLinearRegression(pl.LightningModule):
 model = LitLinearRegression(input_size=1, output_size=1)
 
 # training
-early_stop_callback = EarlyStopping(monitor="train_loss", min_delta=0.00, patience=2, verbose=True, mode="min")
+early_stop_callback = EarlyStopping(monitor="train_loss", min_delta=0.00, patience=5, verbose=True, mode="min")
 
 trainer = pl.Trainer(accelerator='gpu', devices=1, max_epochs=500, log_every_n_steps=2, callbacks=[early_stop_callback])
 trainer.fit(model=model, train_dataloaders=train_loader)

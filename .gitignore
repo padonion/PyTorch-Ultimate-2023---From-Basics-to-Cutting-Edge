@@ -16,3 +16,4 @@ ind.pubmed*
 *.pyc
 venv/
 .vscode/
+310_PytorchLightning/lightning_logs
