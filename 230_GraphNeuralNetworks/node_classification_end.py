@@ -21,6 +21,10 @@ print(f'# classes: {dataset.num_classes}')
 data = dataset[0]  # Get the first graph object.
 print(data)
 
+#%% device
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f'Device: {device}')
+
 #%% train the model
 class GCN(torch.nn.Module):
     def __init__(self, num_hidden, num_features, num_classes):
@@ -49,14 +53,15 @@ class GAT(torch.nn.Module):
         x = self.conv2(x, edge_index)
         return x
 
-model = GAT(num_hidden=16, num_features=dataset.num_features, num_classes=dataset.num_classes)
+model = GCN(num_hidden=16, num_features=dataset.num_features, num_classes=dataset.num_classes).to(device)
 optimizer = torch.optim.Adam(model.parameters())
-criterion = torch.nn.CrossEntropyLoss()
+criterion = torch.nn.CrossEntropyLoss().to(device)
 
 #%% model training
 loss_lst = []
 model.train()
-for epoch in range(1000):
+for epoch in range(2000):
+    data = data.to(device)
     optimizer.zero_grad()
     y_pred = model(data.x, data.edge_index)
     y_true = data.y
@@ -81,5 +86,5 @@ print(f'Test Accuracy: {test_acc}')
 #%% Visualise result
 z = TSNE(n_components=2).fit_transform(y_pred[data.test_mask].detach().cpu().numpy())
 #%%
-sns.scatterplot(x=z[:, 0], y=z[:, 1], hue=data.y[data.test_mask])
+sns.scatterplot(x=z[:, 0], y=z[:, 1], hue=data.cpu().y[data.test_mask])
 # %%
