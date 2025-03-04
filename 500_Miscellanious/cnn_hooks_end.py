@@ -32,9 +32,10 @@ class MyHook:
         
 #%% Register Hook
 my_hook = MyHook()
+handles = []
 for l in model.modules():
     if isinstance(l, torch.nn.modules.conv.Conv2d):
-        handle = l.register_forward_hook(my_hook)
+        handles.append(l.register_forward_hook(my_hook))
         
 
 # %% Forward Pass
@@ -50,4 +51,12 @@ layer_imgs = my_hook.layer_out[layer_num].detach().numpy()
 for i in range(4):
     plt.imshow(layer_imgs[0, i, :, :])
     plt.show()
+# %%
+
+for handle in handles:
+    handle.remove()
+
+y_pred = model(X)
+
+
 # %%

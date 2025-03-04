@@ -1,5 +1,4 @@
 #%% packages
-from datasets import load_dataset, list_datasets
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
