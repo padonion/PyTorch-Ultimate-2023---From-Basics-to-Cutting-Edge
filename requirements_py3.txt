@@ -1,5 +1,6 @@
 # python -m pip install --upgrade pip
 # pip install torch torchvision torchaudio torchmetrics --index-url https://download.pytorch.org/whl/cu126
+# pip install -r requirements_py3.txt
 
 ipykernel
 ipython
